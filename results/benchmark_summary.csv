@@ -1,5 +1,0 @@
-version,evaluation_type,games,wins,losses,mean_paired_delta,improved,unchanged,regressed,interpretation
-joint_rotation_experimental,frozen-opponent paired,73,62,not_recorded,366.7534,not_recorded,not_recorded,0,"Wins increased from 60 to 62 versus runtime-fixed parent; not adaptive online win rate"
-joint_accelerated25,frozen-opponent paired,31,22,9,262.4839,7,24,0,"Shared step-288 budget and acceleration; not adaptive online win rate"
-joint_init_only_guard,normal-budget exact comparison,32,not_applicable,not_applicable,0,0,32,0,"Actions states and scores unchanged in the recorded normal-budget comparisons"
-
