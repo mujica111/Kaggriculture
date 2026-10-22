@@ -11,7 +11,7 @@ TOTAL_STEPS = TURNS_PER_DAY * TOTAL_DAYS
 MAX_MARKET_ORDERS = 10
 FINAL_DAY = TOTAL_DAYS - 1
 
-# Expensive planning checkpoints used by the current family of agents.
+# STEP that consumes lots of time
 MIDGAME_PLANNING_STEP = 288
 LATEGAME_PLANNING_STEP = 624
 FINAL_PLANNING_STEP = 648
