@@ -1,0 +1,42 @@
+lineage,version,test_set,games,wins,losses,draws,win_rate,mean_margin,mean_paired_delta,improved,unchanged,regressed,evaluation_type,source_file,notes
+kaggriculture,V56 original,low30,30,13,17,0,43.33%,-782.6667,,,,,frozen replay,work/low30/work_v56_agent_main.py.json,Strict score margin greater than zero counted as win
+kaggriculture,V56 original,loss19,19,3,16,0,15.79%,-5536.5789,,,,,frozen replay,work/loss19_v56.json,
+kaggriculture,V56 original,latest42,42,15,27,0,35.71%,159.6667,,,,,frozen replay,work/v56_original_loss42.json,Positive mean is driven by several large wins despite losing more games
+kaggriculture,V56 original,new3,3,0,3,0,0.00%,-2422.3333,,,,,frozen replay,work/new3_v56.json,
+kaggriculture,V56 loss19 generalist,low30,30,16,14,0,53.33%,109.4667,,,,,frozen replay,work/loss19_generalist_low30.json,
+kaggriculture,V56 loss19 generalist,old35,35,0,35,0,0.00%,-3202.5714,,,,,frozen replay,work/loss19_generalist_old35.json,
+kaggriculture,V57 best balanced,low16,16,8,8,0,50.00%,-172.8750,,,,,frozen replay,work/low16_v57.json,
+kaggriculture,V57 best balanced,low30,30,17,13,0,56.67%,129.5333,,,,,frozen replay,work/v57_best_balanced_low30.json,
+kaggriculture,V57 best balanced,old35,35,0,35,0,0.00%,-3165.0286,,,,,frozen replay,work/v57_best_balanced_old35.json,
+kaggriculture,V57 best balanced,latest42,42,23,19,0,54.76%,382.7143,,,,,frozen replay,work/v57_best_balanced_latest42.json,
+kaggriculture,V57 best balanced,new35,35,0,35,0,0.00%,-3165.0286,,,,,frozen replay,work/new35_v57.json,This saved set matches the old35 result file contents
+kaggriculture,formal145 actual liquidation,low30,30,29,1,0,96.67%,9628.5333,,,,,paired frozen replay control,work/calendar_settled_delivery_low30_report.json,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,old35,35,28,7,0,80.00%,1613.8286,,,,,paired frozen replay control,work/calendar_settled_delivery_old35_report.json,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,latest42,42,41,1,0,97.62%,4443.4524,,,,,paired frozen replay control,work/calendar_settled_delivery_latest42_report.json,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,new36,36,29,7,0,80.56%,1862.0278,,,,,paired frozen replay control,work/calendar_settled_delivery_new36_report.json,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,new8,8,5,3,0,62.50%,924.2500,,,,,paired frozen replay control,work/calendar_settled_delivery_new8_report.json,Control score recorded in candidate report
+kaggriculture,calendar settled delivery,low30,30,29,1,0,96.67%,10009.1333,380.6000,7,23,0,paired frozen replay,work/calendar_settled_delivery_low30_report.json,No win-to-loss regression in this set
+kaggriculture,calendar settled delivery,old35,35,28,7,0,80.00%,1908.5429,294.7143,5,30,1,paired frozen replay,work/calendar_settled_delivery_old35_report.json,One negative score delta but no win-to-loss regression
+kaggriculture,calendar settled delivery,latest42,42,41,1,0,97.62%,5168.3571,724.9048,6,36,0,paired frozen replay,work/calendar_settled_delivery_latest42_report.json,
+kaggriculture,calendar settled delivery,new36,36,29,7,0,80.56%,2042.3056,180.2778,2,34,0,paired frozen replay,work/calendar_settled_delivery_new36_report.json,
+kaggriculture,calendar settled delivery,new8,8,5,3,0,62.50%,924.2500,0.0000,0,8,0,paired frozen replay,work/calendar_settled_delivery_new8_report.json,Exactly equivalent to formal145 on all eight games
+kaggriculture,calendar settled delivery,regression169,169,147,22,0,86.98%,4957.8698,380.9172,22,147,1,paired frozen replay,work/calendar_settled_delivery_regression169_report.json,One negative margin delta and no win-to-loss regression
+kaggriculture,joint rotation experimental,paired73,73,62,,,84.93%,,366.7534,,,0,paired frozen replay,outputs/kaggriculture_v4_joint_rotation_experimental.manifest.json,Wins increased from 60 to 62; exact loss/draw split was not stored
+kaggriculture,joint accelerated25,paired31,31,22,9,0,70.97%,,262.4839,7,24,0,paired frozen replay,outputs/kaggriculture_v4_joint_accelerated25.manifest.json,Seven improved and twenty-four exactly unchanged
+kaggriculture,joint init-only guard,normal-budget equivalence32,32,,,,,,0.0000,0,32,0,exact action-state-score comparison,outputs/kaggriculture_v4_joint_init_only_guard.verification.json,All normal-budget games identical to joint accelerated25; low-time artificial guard cases are not score-safe
+majkel_core,V40 coop carry,,,,,,,,,,,,not available,outputs/majkel_core_coop_carry_v40.py,Source exists but no comparable saved aggregate was located
+majkel_core,V41 locked guard,,,,,,,,,,,,not available,outputs/majkel_core_locked_guard_v41.py,Source exists but no comparable saved aggregate was located
+majkel_core,V42 locked work,,,,,,,,,,,,not available,outputs/majkel_core_locked_work_v42.py,Source exists but no comparable saved aggregate was located
+majkel_core,V43 locked queue,,,,,,,,,,,,not available,outputs/majkel_core_locked_queue_v43.py,Source exists but no comparable saved aggregate was located
+majkel_core,V44 pending locked,,,,,,,,,,,,not available,outputs/majkel_core_pending_locked_v44.py,Source exists but no comparable saved aggregate was located
+majkel_core,V45 pending pickup,,,,,,,,,,,,not available,outputs/majkel_core_pending_pickup_v45.py,Source exists but no comparable saved aggregate was located
+majkel_core,V46 same-turn locked,counterfactual7,7,1,6,0,14.29%,-8885.8571,,,,,frozen replay,work/results/*_majkel_v46_counterfactual.json,Aggregate reconstructed from seven one-game reports
+majkel_core,V47 third-land guard,,,,,,,,,,,,not available,outputs/majkel_core_third_land_guard_v47.py,Source exists but no comparable saved aggregate was located
+majkel_core,V48 third-land guard,new60,60,29,31,0,48.33%,-4641.8167,,,,,frozen replay,outputs/majkel_core_third_land_guard_v48_chunk1.csv through chunk6.csv,Aggregate combined from six ten-game chunks
+majkel_core,V49 third-land guard,,,,,,,,,,,,not available,outputs/majkel_core_third_land_guard_v49.py,Source exists but no comparable saved aggregate was located
+majkel_core,V50 cash freeze100,,,,,,,,,,,,not available,outputs/majkel_core_cash_freeze100_v50.py,Source exists but no comparable saved aggregate was located
+majkel_core,V51 research,new60,60,54,6,0,90.00%,11741.1000,,,,,frozen replay,outputs/codex_research_v51_new60_recheck.csv,
+majkel_core,V52 selective freeze100,new60 chunk1,10,6,4,0,60.00%,6339.4000,,,,,frozen replay,outputs/majkel_core_selective_freeze100_v52_chunk1.csv,Only the first ten-game chunk was saved
+majkel_core,V53 late-product freeze100,new60,60,29,31,0,48.33%,-4614.6667,,,,,frozen replay,outputs/majkel_core_late_product_freeze100_v53_new60.csv,
+majkel_core,V58 land-purchase recovery,new60,60,29,31,0,48.33%,-5535.0333,,,,,frozen replay,outputs/majkel_core_land_purchase_recovery_v58_new60.csv,
+majkel_core,V59 second-land recovery,new60,60,29,31,0,48.33%,-4013.3167,,,,,frozen replay,outputs/majkel_core_second_land_recovery_v59_new60.csv,
