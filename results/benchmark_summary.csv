@@ -1,0 +1,42 @@
+lineage,version,test_set,games,wins,losses,draws,win_rate,mean_margin,mean_paired_delta,improved,unchanged,regressed,evaluation_type,notes
+kaggriculture,V56 original,low30,30,13,17,0,43.33%,-782.6667,,,,,frozen replay,Strict score margin greater than zero counted as win
+kaggriculture,V56 original,loss19,19,3,16,0,15.79%,-5536.5789,,,,,frozen replay,
+kaggriculture,V56 original,latest42,42,15,27,0,35.71%,159.6667,,,,,frozen replay,Positive mean is driven by several large wins despite losing more games
+kaggriculture,V56 original,new3,3,0,3,0,0.00%,-2422.3333,,,,,frozen replay,
+kaggriculture,V56 loss19 generalist,low30,30,16,14,0,53.33%,109.4667,,,,,frozen replay,
+kaggriculture,V56 loss19 generalist,old35,35,0,35,0,0.00%,-3202.5714,,,,,frozen replay,
+kaggriculture,V57 best balanced,low16,16,8,8,0,50.00%,-172.8750,,,,,frozen replay,
+kaggriculture,V57 best balanced,low30,30,17,13,0,56.67%,129.5333,,,,,frozen replay,
+kaggriculture,V57 best balanced,old35,35,0,35,0,0.00%,-3165.0286,,,,,frozen replay,
+kaggriculture,V57 best balanced,latest42,42,23,19,0,54.76%,382.7143,,,,,frozen replay,
+kaggriculture,V57 best balanced,new35,35,0,35,0,0.00%,-3165.0286,,,,,frozen replay,This saved set matches the old35 result file contents
+kaggriculture,formal145 actual liquidation,low30,30,29,1,0,96.67%,9628.5333,,,,,paired frozen replay control,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,old35,35,28,7,0,80.00%,1613.8286,,,,,paired frozen replay control,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,latest42,42,41,1,0,97.62%,4443.4524,,,,,paired frozen replay control,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,new36,36,29,7,0,80.56%,1862.0278,,,,,paired frozen replay control,Control score recorded in candidate report
+kaggriculture,formal145 actual liquidation,new8,8,5,3,0,62.50%,924.2500,,,,,paired frozen replay control,Control score recorded in candidate report
+kaggriculture,calendar settled delivery,low30,30,29,1,0,96.67%,10009.1333,380.6000,7,23,0,paired frozen replay,No win-to-loss regression in this set
+kaggriculture,calendar settled delivery,old35,35,28,7,0,80.00%,1908.5429,294.7143,5,30,1,paired frozen replay,One negative score delta but no win-to-loss regression
+kaggriculture,calendar settled delivery,latest42,42,41,1,0,97.62%,5168.3571,724.9048,6,36,0,paired frozen replay,
+kaggriculture,calendar settled delivery,new36,36,29,7,0,80.56%,2042.3056,180.2778,2,34,0,paired frozen replay,
+kaggriculture,calendar settled delivery,new8,8,5,3,0,62.50%,924.2500,0.0000,0,8,0,paired frozen replay,Exactly equivalent to formal145 on all eight games
+kaggriculture,calendar settled delivery,regression169,169,147,22,0,86.98%,4957.8698,380.9172,22,147,1,paired frozen replay,One negative margin delta and no win-to-loss regression
+kaggriculture,joint rotation experimental,paired73,73,62,,,84.93%,,366.7534,,,0,paired frozen replay,Wins increased from 60 to 62; exact loss/draw split was not stored
+kaggriculture,joint accelerated25,paired31,31,22,9,0,70.97%,,262.4839,7,24,0,paired frozen replay,Seven improved and twenty-four exactly unchanged
+kaggriculture,joint init-only guard,normal-budget equivalence32,32,,,,,,0.0000,0,32,0,exact action-state-score comparison,All normal-budget games identical to joint accelerated25; low-time artificial guard cases are not score-safe
+majkel_core,V40 coop carry,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V41 locked guard,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V42 locked work,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V43 locked queue,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V44 pending locked,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V45 pending pickup,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V46 same-turn locked,counterfactual7,7,1,6,0,14.29%,-8885.8571,,,,,frozen replay,Aggregate reconstructed from seven one-game reports
+majkel_core,V47 third-land guard,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V48 third-land guard,new60,60,29,31,0,48.33%,-4641.8167,,,,,frozen replay,Aggregate combined from six ten-game chunks
+majkel_core,V49 third-land guard,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V50 cash freeze100,,,,,,,,,,,,not available,Source exists but no comparable saved aggregate was located
+majkel_core,V51 research,new60,60,54,6,0,90.00%,11741.1000,,,,,frozen replay,
+majkel_core,V52 selective freeze100,new60 chunk1,10,6,4,0,60.00%,6339.4000,,,,,frozen replay,Only the first ten-game chunk was saved
+majkel_core,V53 late-product freeze100,new60,60,29,31,0,48.33%,-4614.6667,,,,,frozen replay,
+majkel_core,V58 land-purchase recovery,new60,60,29,31,0,48.33%,-5535.0333,,,,,frozen replay,
+majkel_core,V59 second-land recovery,new60,60,29,31,0,48.33%,-4013.3167,,,,,frozen replay,
