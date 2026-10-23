@@ -270,110 +270,8 @@ The RL agent used in the internal comparison was developed by other team members
 
 - **Treat regression and runtime as part of agent design.** A strategy must preserve existing advantages and complete within the available execution budget.
 
-  
-
-## Repository Structure
-
-```text
-kaggriculture-agent/
-├── kaggle_submission.py
-│
-├── src/
-│   └── kaggriculture_agent/
-│       ├── entry.py
-│       ├── strategy.py
-│       ├── time_guard.py
-│       ├── loader.py
-│       └── modules/
-│
-├── tools/
-│   └── build_submission.py
-│
-├── tests/
-│   └── test_project.py
-│
-├── results/
-│   ├── benchmark_summary.csv
-│   ├── version_comparison.md
-│   └── runtime_summary.md
-│
-└── dist/
-    └── kaggle_submission.py
 
 
-## Requirements
-
-The submitted agent uses only the Python standard library.
-
-- Python 3.10 or later
-- No third-party runtime dependency
-- `pytest` is optional and required only for repository tests
-
-Install the optional test dependency with:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-## Usage
-
-### Import the Readable Agent
-
-From the repository root:
-
-```bash
-PYTHONPATH=src python -c \
-  "from kaggriculture_agent import agent; print(callable(agent))"
-```
-
-The package exposes the callable:
-
-```python
-from kaggriculture_agent import agent
-```
-
-### Use the Kaggle Submission
-
-Upload `kaggle_submission.py` and configure Kaggle to call:
-
-```python
-from kaggle_submission import agent
-```
-
-The submission does not require local replay files, external strategy data, or third-party packages.
-
-### Rebuild the Submission
-
-To rebuild the portable single-file agent from the readable modules:
-
-```bash
-python tools/build_submission.py
-```
-
-The generated submission is written to:
-
-```text
-dist/kaggle_submission.py
-```
-
-Rebuilding may change the compressed file bytes while preserving the embedded source modules and entry behavior.
-
-## Tests
-
-Run the structural test suite with:
-
-```bash
-python -m pytest -q
-```
-
-The included tests verify that:
-
-- the submission exposes an `agent` callable;
-- the readable entry remains lightweight;
-- the extracted source tree contains the expected implementation modules;
-- the principal strategy and runtime-guard modules are present.
-
-These tests check project structure and packaging. They do not claim to reproduce leaderboard performance or an adaptive opponent win rate.
 
 ## Results
 
@@ -383,15 +281,9 @@ Public summaries are stored in `results/`.
 - `version_comparison.md` explains the main differences between selected versions.
 - `runtime_summary.md` documents the runtime evaluation and its measurement limitations.
 
-Raw private replays, opponent identities, local caches, and intermediate failed experiments are not included in the public repository.
 
 ## License and Attribution
 
 This project was developed from an open-source baseline whose preserved source uses Apache License 2.0 notices.
 
-See:
 
-- `LICENSE` for the repository license;
-- `NOTICE.md` for upstream attribution and modification notes.
-
-All upstream notices should be retained when redistributing the project. Any additional code or assets added to the repository should be checked for license compatibility before publication.
