@@ -1,134 +1,234 @@
 # Agricultural Strategy Agent
 
-A multi-route heuristic agent developed for the Kaggriculture competition. The strategy was refined through comparative gameplay replay analysis, controlled regression testing, runtime profiling, and LLM-assisted implementation.
+A multi-route heuristic agent developed for the Kaggriculture competition. The project combined gameplay replay analysis, regression testing, runtime profiling, and LLM-assisted implementation.
 
 **Competition result:** Silver Medal — 488th of 10,148 teams (top 4.81%)
 
-The project was built upon an open-source baseline and extended through iterative strategy development, opponent evaluation, randomized shop simulations, and runtime optimization. A major part of the work involved converting patterns observed in high-ranking gameplay into testable strategic hypotheses while controlling for regression and overfitting.
-
-## Competition Result
-
-- **Platform:** Kaggle
-- **Competition:** Kaggriculture
-- **Achievement:** Silver Medal
-- **Final rank:** 488th of 10,148 teams
-- **Percentile:** Top 4.81%
+The agent was built upon an open-source multi-route baseline and extended through strategy reconstruction, calendar-based production planning, economic evaluation, and runtime safeguards.
 
 [View Kaggle certification](https://www.kaggle.com/certification/competitions/a982295350/kaggriculture)
 
 ## Agent Design
 
-The agent uses a multi-route heuristic framework rather than following one fixed sequence of actions. Its decisions are derived from the observable game state and adjusted according to available resources, production capacity, investment timing, and runtime constraints.
+The agent follows multiple production and economic routes rather than one fixed sequence of actions.
 
-- **Multi-route planning:** Supports multiple production and economic routes with different investment timing, crop allocation, livestock development, and selling decisions.
+Its high-level decision process is:
 
-- **State-aware decision-making:** Evaluates observable information such as cash, inventory, available workers, crop state, livestock, shop availability, remaining production cycles, and game progress.
+```text
+Game observation
+    ↓
+Load the active route and existing commitments
+    ↓
+Evaluate optional investments and crop rotations
+    ↓
+Compile feasible worker and material schedules
+    ↓
+Apply funding, inventory, and continuity checks
+    ↓
+Return a completed action or activate a runtime safeguard
+```
 
-- **Adaptive economic management:** Coordinates purchases, planting, feeding, fertilizing, harvesting, transportation, and sales while considering capital requirements and whether an investment can generate returns before the game ends.
+### Route-Based Strategy
 
-- **Opponent-state awareness:** Uses observable opponent development as contextual information where it affects competitive priorities. The agent does not depend on opponent identities, replay IDs, or hard-coded responses to individual matches.
+The open-source foundation represents strategies as route plans containing movement, farming, livestock, purchasing, and selling actions.
 
-- **Route continuity:** Strategic adjustments are designed to preserve viable production chains. A local state change does not automatically replace the entire route.
+These routes provide stable production chains. Additional decision layers may repair or extend a route when the current state differs from its original assumptions, without unnecessarily replacing the entire strategy.
 
-- **Runtime safeguards:** Monitors the remaining execution budget and can switch to lightweight fallback decisions when necessary, reducing timeout risk while preserving completed strategic decisions whenever possible.
+Route decisions consider information including:
+
+- cash and inventory;
+- workers and livestock;
+- crops and remaining production cycles;
+- land ownership;
+- market prices and unlocked shops;
+- required production inputs;
+- remaining game time and execution budget.
+
+### Calendar-Based Production Planning
+
+Midgame crop changes are evaluated as complete production projects rather than isolated planting actions.
+
+The planner considers:
+
+- land availability;
+- crop maturity and remaining yields;
+- planting, watering, fertilizing, harvesting, and transportation;
+- seeds, feed, fertilizer, and warehouse capacity;
+- worker availability and additional payroll;
+- whether production can be completed and sold before the game ends;
+- the opportunity cost of replacing the existing route.
+
+A candidate is rejected if its work, funding, inputs, or timing cannot be completed.
+
+### Joint Route Evaluation
+
+An early implementation added a reconstructed tomato strategy on top of the existing route. Although the tomato project appeared profitable in isolation, it competed with the original strategy for land, workers, cash, inputs, inventory space, and transportation time.
+
+The later system evaluates the new crop rotation together with the existing route. Protected work remains fixed, while compatible crop tasks may be rescheduled across available workers.
+
+The agent therefore evaluates:
+
+```text
+Value of the new project
++ retained value from the existing route
+- additional inputs and payroll
+- displaced production
+- land and transportation costs
+```
+A project is committed only when the combined schedule is feasible and economically preferable to retaining the original plan.
+
+### Runtime Safeguards
+
+Planning and worker allocation can be computationally expensive. The runtime controller monitors the current action allowance and remaining banked overage time.
+
+If the available budget becomes too small:
+
+1. the agent returns a compatible plan that has already been fully compiled; or
+2. if no complete plan exists, it constructs a lightweight action from the current state.
+
+The deployed policy does not read replay files, episode IDs, opponent identities, recorded future actions, or external strategy tables.
+
 
 ## Strategy Development
 
-The project evolved from a fixed-strategy agent into a multi-route system, followed by a broader effort to reconstruct effective strategies from high-ranking gameplay.
+### 1. From a Fixed Strategy to a Multi-Route Baseline
 
-### 1. From a Fixed Strategy to Multi-Route Heuristics
+The first agent contained approximately 400 lines and followed a mostly fixed economic and production strategy.
 
-The initial agent contained approximately 400 lines and followed a largely fixed economic and production strategy.
+This approach was understandable but inflexible. When shop availability, resources, or opponent development differed from its assumptions, the agent had few ways to recover.
 
-I later adopted an open-source multi-route agent as the development baseline and iteratively refined its route selection, observable opponent-state heuristics, and economic decision rules.
+I therefore adopted an open-source multi-route agent as the development baseline. My work focused on extending its route selection, economic rules, production planning, regression safety, and runtime reliability.
 
-This stage revealed an important limitation: adding more rules did not consistently improve performance. Modifications designed around individual losing games often overfitted known replays, introduced regressions, or performed poorly under different game states and shop configurations.
+### 2. Limitations of Reactive Counter-Strategies
 
-As a result, new changes increasingly had to demonstrate value across multiple games rather than solve only the replay that originally motivated them.
+Early development was strongly opponent-driven. I tested against newly released open-source agents, inspected losing replays, and used LLM-assisted iteration to implement counter-strategies.
 
-### 2. Moving Beyond Reactive Open-Source Adaptation
+Some changes produced immediate improvements, but they were difficult to maintain:
 
-I experimented with several open-source agents and used LLM-assisted code iteration to develop responses to commonly available strategies and opponent configurations.
+- a rule that defeated one strategy could weaken another matchup;
+- changing complete routes during a game could break existing production;
+- replay-specific fixes frequently caused historical regressions;
+- additional rules increased code complexity and runtime cost.
 
-Although some targeted changes produced immediate improvements, the gains were difficult to maintain as new open-source agents appeared. A route that countered one opponent could weaken performance against another or damage an existing production chain.
+After more than 20 major iterations, I shifted the objective from fixing individual losses to identifying recurring economic and production problems.
 
-After more than 20 major iterations, I concluded that repeatedly patching the agent against the latest opponent was producing diminishing returns. I therefore shifted the focus from reactive counter-strategy development toward identifying broader strategic principles from high-ranking gameplay.
+A candidate was no longer judged only by whether it won the replay that motivated it. It also had to preserve established advantages across unrelated test sets.
 
-### 3. Comparing Heuristics and Reinforcement Learning
+### 3. Learning from High-Ranking Gameplay
 
-In parallel, other members of the team developed a reinforcement-learning agent. This allowed us to compare the RL approach with my multi-route heuristic agent under the same project constraints.
+My first attempt supplied an LLM with approximately 100 replays without a sufficiently focused analytical objective. This produced little useful progress.
 
-On a shared 169-case offline evaluation set, the heuristic agent recorded 145 winning outcomes, while the RL agent recorded 70 under the same evaluation procedure.
+I later manually compared approximately 200 additional replays from a high-ranking player with the open-source baseline.
 
-These figures describe the project's internal offline evaluation and should not be interpreted as leaderboard win rates against adaptive opponents.
+The comparison showed that early behavior was often similar, while larger differences emerged during midgame investment and field expansion. Recurring differences included:
 
-The heuristic approach benefited from existing strategic knowledge and the ability to incorporate specific economic reasoning. The RL agent did not achieve comparable results within the available development period, partly because an effective reference policy was not available to guide learning.
+- field allocation;
+- crop mixtures;
+- crop replacement timing;
+- fourth-field tomato production;
+- third-field crop rotation;
+- coordination between hiring, purchasing, production, and selling.
 
-This comparison supported the decision to continue improving the heuristic agent through strategic analysis and reconstruction rather than relying primarily on further trial-and-error modification or RL training.
+These observations were converted into focused engineering questions.
 
-### 4. Reconstructing Strategies from High-Ranking Replays
+Instead of asking the LLM to imitate an entire agent, I asked whether a proposed project could be funded, scheduled, supplied, harvested, transported, and sold without damaging the existing production chain.
 
-My first attempt involved providing an LLM with approximately 100 gameplay replays without defining a sufficiently focused analytical objective. This produced little useful progress.
+This produced more useful results than supplying raw replays without a specific hypothesis.
 
-I subsequently examined approximately 200 replays from a high-ranking player and compared them with the open-source baseline.
+### 4. Regression-Aware Structural Improvements
 
-The analysis produced several findings:
+Later development focused on complete economic chains rather than isolated parameter changes.
 
-- Early-game behavior was often similar, while larger strategic differences emerged during the midgame.
-- Crop allocation and field usage differed across several recurring production routes.
-- The reference agent's use of the fourth field for larger-scale tomato production appeared to be a significant structural difference.
-- Attempts to add this route as a small extension to the existing strategy produced limited improvement because it conflicted with legacy scheduling and investment decisions.
-- Giving the reconstructed route priority—and removing conflicting legacy behavior where necessary—produced substantially better results.
-- The investigation was later narrowed to third-field investment, crop allocation, and rotation decisions.
+When a candidate improved one test set but damaged another, I compared their action sequences and game states to determine:
 
-This process converted replay observations into testable strategic hypotheses. My role was to identify meaningful differences, define the questions to investigate, evaluate the resulting implementations, and reject changes that produced regressions or relied on overly narrow conditions.
+- whether capital was committed too early or too late;
+- whether required feed, seeds, or fertilizer were removed;
+- whether additional workers recovered their payroll;
+- whether new crops displaced more valuable production;
+- whether goods reached the warehouse and were sold;
+- whether runtime fallback disrupted the active route.
 
-The LLM was used as an implementation and analysis assistant rather than as an independent source of strategy.
+This process led to the joint crop-rotation and opportunity-cost evaluation used by the final agent.
 
 ## Evaluation and Testing
 
-I used a multi-layered evaluation workflow to determine whether changes addressed known weaknesses without sacrificing performance elsewhere.
+No single evaluation method was treated as sufficient.
 
-| Evaluation method | Purpose |
+| Evaluation source | Purpose |
 |---|---|
-| Recent losing games | Determine whether a candidate addressed weaknesses exposed by the previous version. |
-| Historical regression sets | Test against previously recorded games and detect regressions. |
-| Open-source opponents | Assess competitiveness against publicly available strategies. |
-| Randomized shop simulations | Check whether decisions remained effective across different shop configurations. |
-| Kaggle leaderboard submissions | Observe external performance while accounting for matchmaking and result variability. |
+| Recent losing games | Check whether a candidate addressed newly observed weaknesses. |
+| Historical regression sets | Detect damage to previously successful behavior. |
+| Open-source opponents | Compare against reproducible public strategies. |
+| Randomized shop simulations | Test sensitivity to different market and shop configurations. |
+| Frozen replay comparisons | Compare versions under identical recorded conditions. |
+| Kaggle submissions | Observe performance in the real execution environment. |
 
-### Iterative Validation
+### Evaluation Process
 
-The evaluation process generally followed these steps:
+Meaningful changes followed a staged process:
 
-1. Compare the candidate directly with its baseline on the same test cases.
-2. Inspect early results before committing resources to a full regression run.
-3. Trace replays to find where resources, production, score progression, or actions began to diverge.
-4. Examine the relevant game state, including cash, inventory, workers, crops, livestock, shop configuration, and remaining production cycles.
-5. Test whether the proposed solution improved multiple related cases rather than only one replay.
-6. Reject candidates that improved selected losses by weakening established regression sets.
+```text
+Mechanical feasibility checks
+        ↓
+Focused screening on relevant games
+        ↓
+Paired comparison with the baseline
+        ↓
+Cross-set regression testing
+        ↓
+Kaggle submission
+```
 
-This workflow helped distinguish broadly useful improvements from changes that merely fitted known failure cases.
+Mechanical checks verified that actions, worker routes, production windows, inputs, inventory, and market orders were valid.
+
+Promising candidates were then compared with the baseline on the same cases. Evaluation considered score differences, win/loss direction, regressions, action divergence, and timeout behavior.
+
+A candidate was rejected if it gained a small number of wins while introducing larger losses elsewhere.
+
+### Preventing Replay Overfitting
+
+Replay analysis was used to identify mechanisms, not to build per-game lookup rules.
+
+Candidate conditions had to use state information available during normal gameplay, such as cash, inventory, crop age, land ownership, production capacity, shop availability, and remaining time.
+
+The deployed agent does not use:
+
+- episode IDs;
+- replay filenames;
+- player identities;
+- recorded future actions;
+- hard-coded decisions for individual matches.
+
+### Interpreting Offline Results
+
+Frozen replay tests allow controlled version comparisons, but they do not measure a true win rate against an adaptive opponent.
+
+If the candidate changes its behavior, a live opponent may respond differently from the actions stored in the replay. Offline results are therefore described as paired replay outcomes or frozen-opponent comparisons rather than general leaderboard win rates.
+
+### Heuristic and RL Comparison
+
+The heuristic and RL agents were evaluated using the same internal 169-case procedure.
+
+| Agent | Winning outcomes |
+|---|---:|
+| Multi-route heuristic agent | 145 / 169 |
+| RL agent | 70 / 169 |
+
+This internal comparison influenced the project's development direction. It does not establish that heuristic methods generally outperform reinforcement learning or represent an adaptive leaderboard win rate.
+
+Under the available development time, data, and training setup, the heuristic system made more effective use of existing strategic knowledge and was selected as the primary agent.
 
 ## Runtime Optimization
 
-The environment provided a per-action time allowance together with a 60-second banked overage budget. Expensive planning steps could consume a large portion of this shared budget and eventually cause the agent to time out.
+The environment provided a per-action allowance and a shared 60-second banked overage budget.
 
-Execution records showed that several planning stages were particularly expensive, especially around step 288.
+Execution profiling showed that most decisions were inexpensive, while several planning steps consumed substantially more time. Step 288 was the most common source of a large runtime spike.
 
-### Runtime Improvements
+An early safeguard stopped planning when an individual step exceeded a fixed threshold. This was too conservative: a long step did not always imply that the entire game would time out, and premature fallback could remove productive work or disrupt the active route.
 
-- **Execution profiling:** Inspected JSON execution records to identify decisions that consumed unusually large amounts of the available time budget.
+The final safeguard instead considers the remaining overall budget. It stops expensive searches at controlled checkpoints and prefers plans that have already been completely compiled.
 
-- **Fallback analysis:** An early implementation activated a fallback route when an individual step exceeded a fixed threshold. This proved too conservative: one expensive step did not necessarily mean that the entire game would exceed its budget.
-
-- **Remaining-budget control:** Replaced the single-step rule with logic based on the remaining overall time budget.
-
-- **Strategy preservation:** Adjusted fallback behavior to preserve already completed strategic decisions rather than replacing the production plan with an unrelated route.
-
-- **Threshold testing:** Evaluated different safety thresholds to reduce timeout risk without prematurely abandoning strategically important searches.
-
-### Runtime Evaluation
+### Runtime Results
 
 | Metric | Before optimization | After optimization |
 |---|---:|---:|
@@ -136,159 +236,162 @@ Execution records showed that several planning stages were particularly expensiv
 | Timed-out games | 16 | 2 |
 | Observed timeout rate | 53.3% | 6.7% |
 
-Across two separate 30-game evaluation batches, the observed timeout rate decreased by 46.7 percentage points.
+The observed timeout rate decreased by 46.7 percentage points across two separate 30-game batches.
 
-The two replay formats did not expose identical timing information. The older format recorded consumption of the banked overage allowance, while the newer logs included per-step duration values. Their average runtime values were therefore not directly comparable and were excluded from the table.
+Average runtime is not directly compared because the older replay format recorded only consumption of the overage bank, while the newer logs recorded a duration for every action.
 
-Occasional timeouts remained possible because execution performance differed between local testing and the competition environment.
+Runtime safeguards reduced but did not eliminate timeout risk. Execution could still vary with server load, initialization cost, state-dependent search complexity, and differences between local and competition environments.
+
+## My Contributions
+
+My contributions included:
+
+- inspecting gameplay replays and identifying strategic differences;
+- selecting which differences were worth implementing;
+- separating general problems from replay-specific symptoms;
+- extending the open-source multi-route baseline;
+- defining regression criteria and evaluation sets;
+- rejecting overfitted or economically incomplete candidates;
+- analyzing runtime failures and fallback behavior;
+- directing LLM-assisted implementation and testing;
+- packaging the final self-contained submission agent.
+
+The RL agent used in the internal comparison was developed by other team members.
 
 ## Key Takeaways
 
-- **Choose development methods empirically.** Under this project's constraints, a heuristic agent built upon existing strategic knowledge outperformed the available RL approach in the internal evaluation.
+- **Use empirical comparisons to choose development methods.** Under this project's constraints, the heuristic approach outperformed the available RL implementation.
 
-- **Use focused hypotheses when working with LLMs.** Supplying large numbers of replays without a clear analytical question produced limited value. Progress improved when the investigation focused on specific strategic differences, such as field usage, crop allocation, investment timing, and route conflicts.
+- **Give LLMs focused technical questions.** Raw replays produced limited value until gameplay differences were converted into specific hypotheses.
 
-- **Prioritize generalization over reactive patching.** Repeatedly countering newly released agents produced temporary gains but also created regressions. Reconstructing broader strategic principles from high-ranking gameplay provided a more sustainable direction.
+- **Evaluate complete economic chains.** A profitable crop project can reduce total value if it ignores payroll, displaced production, input requirements, or transportation.
 
-- **Treat regression testing as part of strategy development.** A change was not considered successful merely because it fixed the replay that motivated it. It also had to preserve established advantages across historical test sets.
+- **Prioritize generalization over reactive patching.** Fixing one replay is insufficient if the change damages unrelated games.
 
-- **Treat runtime as part of agent design.** A strategically strong decision is ineffective if it cannot complete within the available execution budget. Runtime safeguards therefore had to preserve both computational safety and route continuity.
+- **Treat regression and runtime as part of agent design.** A strategy must preserve existing advantages and complete within the available execution budget.
 
+  
 
-## Agent Design
-
-The final agent combines a route-based heuristic policy with state-dependent economic evaluation, calendar-based production planning, and runtime safeguards.
-
-Its decision process can be summarized as:
+## Repository Structure
 
 ```text
-Observation
-    ↓
-Normalize the current farm and market state
-    ↓
-Load the active route and its existing production commitments
-    ↓
-Evaluate optional investments and crop rotations
-    ↓
-Compile feasible worker schedules and material flows
-    ↓
-Apply inventory, funding, and route-continuity checks
-    ↓
-Return the completed action or activate the runtime safeguard
+kaggriculture-agent/
+├── kaggle_submission.py
+│
+├── src/
+│   └── kaggriculture_agent/
+│       ├── entry.py
+│       ├── strategy.py
+│       ├── time_guard.py
+│       ├── loader.py
+│       └── modules/
+│
+├── tools/
+│   └── build_submission.py
+│
+├── tests/
+│   └── test_project.py
+│
+├── results/
+│   ├── benchmark_summary.csv
+│   ├── version_comparison.md
+│   └── runtime_summary.md
+│
+└── dist/
+    └── kaggle_submission.py
+
+
+## Requirements
+
+The submitted agent uses only the Python standard library.
+
+- Python 3.10 or later
+- No third-party runtime dependency
+- `pytest` is optional and required only for repository tests
+
+Install the optional test dependency with:
+
+```bash
+python -m pip install -r requirements.txt
 ```
 
-### Route-Based Strategy Layer
+## Usage
 
-The original open-source framework represents major strategies as route plans containing scheduled movement, production, purchasing, and selling actions.
+### Import the Readable Agent
 
-The final agent preserves this route structure instead of generating every action independently. A route provides a stable production foundation, while additional decision layers can repair or extend it when the current state differs from its original assumptions.
+From the repository root:
 
-The active route influences:
+```bash
+PYTHONPATH=src python -c \
+  "from kaggriculture_agent import agent; print(callable(agent))"
+```
 
-- land and infrastructure investment;
-- crop allocation and replanting;
-- livestock and feeding schedules;
-- worker hiring and task assignment;
-- warehouse usage and material transportation;
-- the timing of purchases and sales.
+The package exposes the callable:
 
-This structure helps preserve long production chains that would be easy to break through isolated rule changes.
+```python
+from kaggriculture_agent import agent
+```
 
-### State Representation and Decision Inputs
+### Use the Kaggle Submission
 
-Each decision is based on the current observation rather than replay identifiers or player identities.
+Upload `kaggle_submission.py` and configure Kaggle to call:
 
-The agent evaluates information including:
+```python
+from kaggle_submission import agent
+```
 
-- current cash and expected funding requirements;
-- warehouse inventory and remaining storage capacity;
-- owned land, crops, crop ages, and remaining production cycles;
-- livestock, feed requirements, fertilizer, and other production inputs;
-- available workers and their current positions;
-- market prices and unlocked shops;
-- previously committed production work;
-- the current day, hour, and remaining game duration;
-- the remaining execution-time allowance.
+The submission does not require local replay files, external strategy data, or third-party packages.
 
-These state variables are converted into feasibility and economic checks before a candidate route modification is accepted.
+### Rebuild the Submission
 
-### Calendar-Based Production Planning
+To rebuild the portable single-file agent from the readable modules:
 
-Midgame crop changes are evaluated as complete production projects rather than isolated planting actions.
+```bash
+python tools/build_submission.py
+```
 
-For a proposed project, the planning system considers:
+The generated submission is written to:
 
-1. which existing crops and tasks must remain protected;
-2. when land becomes available;
-3. planting, watering, fertilizing, harvesting, and transportation requirements;
-4. seed, fertilizer, feed, and inventory dependencies;
-5. worker availability and additional payroll;
-6. whether the resulting products can be delivered or sold before the game ends;
-7. the opportunity cost of replacing the existing route.
+```text
+dist/kaggle_submission.py
+```
 
-The planner compiles these requirements into daily worker schedules. A candidate is rejected if its required work, inputs, funding, or timing cannot be completed.
+Rebuilding may change the compressed file bytes while preserving the embedded source modules and entry behavior.
 
-### Joint Route and Crop-Rotation Evaluation
+## Tests
 
-The final version includes a scoped third-field crop-rotation mechanism.
+Run the structural test suite with:
 
-Instead of treating the new crop project as an independent overlay, the agent evaluates it together with existing work on the same field. Existing feed-dependent harvests and other protected operations remain fixed, while compatible crop tasks may be rescheduled across available workers.
+```bash
+python -m pytest -q
+```
 
-The economic assessment compares the candidate against the original route's investment opportunity. This prevents a proposed rotation from appearing profitable merely because it ignored land, payroll, inventory, or production commitments already present in the baseline strategy.
+The included tests verify that:
 
-A project is committed only when:
+- the submission exposes an `agent` callable;
+- the readable entry remains lightweight;
+- the extracted source tree contains the expected implementation modules;
+- the principal strategy and runtime-guard modules are present.
 
-- the required land is compatible with existing ownership;
-- its production calendar is feasible;
-- necessary inputs and payroll can be funded;
-- it does not overwrite protected route commitments;
-- its evaluated value is preferable to retaining the existing plan.
+These tests check project structure and packaging. They do not claim to reproduce leaderboard performance or an adaptive opponent win rate.
 
-### Action Repair and Continuity Layers
+## Results
 
-Before returning an action, the agent applies several consistency checks to preserve the production chain.
+Public summaries are stored in `results/`.
 
-These checks include:
+- `benchmark_summary.csv` contains version-level evaluation summaries.
+- `version_comparison.md` explains the main differences between selected versions.
+- `runtime_summary.md` documents the runtime evaluation and its measurement limitations.
 
-- repairing planting or building actions when a target tile still requires preparation;
-- reserving inventory needed by later actions;
-- preventing sales that would remove required production inputs;
-- respecting warehouse-capacity constraints;
-- preserving worker and material-flow dependencies;
-- avoiding conflicting land purchases or crop commitments;
-- liquidating eligible terminal inventory when it is no longer required.
+Raw private replays, opponent identities, local caches, and intermediate failed experiments are not included in the public repository.
 
-These layers modify local actions without replacing the entire active route.
+## License and Attribution
 
-### Runtime Safeguards
+This project was developed from an open-source baseline whose preserved source uses Apache License 2.0 notices.
 
-Some planning stages—particularly calendar compilation and route allocation—can be computationally expensive.
+See:
 
-The runtime controller derives a working deadline from:
+- `LICENSE` for the repository license;
+- `NOTICE.md` for upstream attribution and modification notes.
 
-- the environment's per-action allowance;
-- the remaining banked overage time;
-- the time already consumed by the current decision.
-
-Planning checkpoints periodically test this deadline. If the remaining budget becomes too small, the agent stops extending the search.
-
-The safeguard follows two levels:
-
-1. **Completed-plan fallback:** If one or more compatible plans have already been fully compiled, the agent returns a completed plan rather than an interrupted partial result.
-2. **Emergency current-state action:** If no completed plan exists, it constructs a lightweight action from the current observation, prioritizing immediately necessary care, safe inventory handling, and executable work.
-
-Random selection, where used, is restricted to fully completed and currently compatible plans. It is not used to select arbitrary routes or identify opponents.
-
-### Implementation Constraints
-
-The deployed agent is self-contained and uses only the Python standard library. Its required modules and strategy data are embedded into one submission file.
-
-The runtime policy does not read:
-
-- local replay files;
-- opponent identities;
-- episode IDs;
-- future actions;
-- external strategy tables.
-
-Replay analysis was used during development to form and test strategic hypotheses, but replay-specific information is not part of the deployed decision interface.
+All upstream notices should be retained when redistributing the project. Any additional code or assets added to the repository should be checked for license compatibility before publication.
