@@ -33,25 +33,13 @@ Return a completed action or activate a runtime safeguard
 
 The open-source foundation represents strategies as route plans containing movement, farming, livestock, purchasing, and selling actions.
 
-These routes provide stable production chains. Additional decision layers may repair or extend a route when the current state differs from its original assumptions, without unnecessarily replacing the entire strategy.
-
-Route decisions consider information including:
-
-- cash and inventory;
-- workers and livestock;
-- crops and remaining production cycles;
-- land ownership;
-- market prices and unlocked shops;
-- required production inputs;
-- remaining game time and execution budget.
+These routes provide stable production chains. Route decisions consider information including, cash and inventory, workers and livestock, crops and remaining production cycles, land ownership, market prices and unlocked shops, required production inputs and remaining game time and execution budget.
 
 ### Calendar-Based Production Planning
 
-Midgame crop changes are evaluated as complete production projects rather than isolated planting actions.
+Midgame crop changes are evaluated as complete production projects rather than isolated planting action.
 
-The planner considers:
-
-- land availability;
+The planner considers land availability;
 - crop maturity and remaining yields;
 - planting, watering, fertilizing, harvesting, and transportation;
 - seeds, feed, fertilizer, and warehouse capacity;
@@ -59,35 +47,19 @@ The planner considers:
 - whether production can be completed and sold before the game ends;
 - the opportunity cost of replacing the existing route.
 
-A candidate is rejected if its work, funding, inputs, or timing cannot be completed.
-
 ### Joint Route Evaluation
 
 An early implementation added a reconstructed tomato strategy on top of the existing route. Although the tomato project appeared profitable in isolation, it competed with the original strategy for land, workers, cash, inputs, inventory space, and transportation time.
 
 The later system evaluates the new crop rotation together with the existing route. Protected work remains fixed, while compatible crop tasks may be rescheduled across available workers.
 
-The agent therefore evaluates:
-
-```text
-Value of the new project
-- retained value from the existing route
-- additional inputs and payroll
-- displaced production
-- land and transportation costs
-```
-A project is committed only when the combined schedule is feasible and economically preferable to retaining the original plan.
+Combining routes thus involves retained value from the existing route, additional inputs and payroll, displaced production and land and transportation costs. New route will only be adapted if much profit is estimated.
 
 ### Runtime Safeguards
 
 Planning and worker allocation can be computationally expensive. The runtime controller monitors the current action allowance and remaining banked overage time.
 
-If the available budget becomes too small:
-
-1. the agent returns a compatible plan that has already been fully compiled; or
-2. if no complete plan exists, it constructs a lightweight action from the current state.
-
-The deployed policy does not read replay files, episode IDs, opponent identities, recorded future actions, or external strategy tables.
+If the available budget becomes too small, the agent returns a compatible plan that has already been fully compiled, or if no complete plan exists, ***no*** action will be chosen.
 
 
 ## Strategy Development
@@ -104,7 +76,7 @@ I therefore adopted an open-source multi-route agent as the development baseline
 
 Early development was strongly opponent-driven. I tested against newly released open-source agents, inspected losing replays, and used LLM-assisted iteration to implement counter-strategies.
 
-Some changes produced immediate improvements, but they were difficult to maintain:
+Some changes produced immediate improvements, but they were difficult to maintain due to several factors including regression problem, 
 
 - a rule that defeated one strategy could weaken another matchup;
 - changing complete routes during a game could break existing production;
