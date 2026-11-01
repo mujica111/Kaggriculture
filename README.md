@@ -27,6 +27,7 @@ Apply funding, inventory, and continuity checks
     ↓
 Return a completed action or activate a runtime safeguard
 ```
+[gameshock](image/gameshock.png)
 
 ### Route-Based Strategy
 
@@ -70,7 +71,7 @@ The agent therefore evaluates:
 
 ```text
 Value of the new project
-+ retained value from the existing route
+- retained value from the existing route
 - additional inputs and payroll
 - displaced production
 - land and transportation costs
