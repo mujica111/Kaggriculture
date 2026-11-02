@@ -14,19 +14,52 @@ The agent follows multiple production and economic routes rather than one fixed 
 
 Its high-level decision process is:
 
-```text
-Game observation
-    ↓
-Load the active route and existing commitments
-    ↓
-Evaluate optional investments and crop rotations
-    ↓
-Compile feasible worker and material schedules
-    ↓
-Apply funding, inventory, and continuity checks
-    ↓
-Return a completed action or activate a runtime safeguard
-```
+'''Madrid
+flowchart TD
+    A["Game Observation"] --> B["Load Current State"]
+    B --> C["Active Route & Existing Commitments"]
+
+    C --> D["Route-Based Strategy"]
+    D --> E["Evaluate Optional Investments<br/>and Crop Rotations"]
+
+    E --> F["Joint Route Evaluation"]
+
+    F --> G["Economic Evaluation"]
+    F --> H["Calendar-Based Production Planning"]
+
+    G --> I["Feasibility Checks"]
+    H --> I
+
+    I --> J["Funding · Inventory · Resource<br/>and Production Continuity Checks"]
+
+    J --> K["Compile Feasible Worker<br/>and Material Schedules"]
+
+    K --> L{"Runtime Budget Check"}
+
+    L -->|"Sufficient budget"| M["Return Completed Action"]
+    L -->|"Budget constrained"| N["Stop Expensive Searches<br/>Prefer Fully Compiled Plans"]
+    N --> M
+
+    R["Runtime Controller<br/>Action Allowance &<br/>Shared 60-Second Budget"] -.-> L
+
+    subgraph Planning["Strategy & Planning"]
+        D
+        E
+        F
+        G
+        H
+    end
+
+    subgraph Validation["Feasibility & Execution"]
+        I
+        J
+        K
+        L
+        N
+    end
+
+    '''
+
 
 ### Route-Based Strategy
 
