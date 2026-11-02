@@ -27,7 +27,7 @@ Apply funding, inventory, and continuity checks
     ↓
 Return a completed action or activate a runtime safeguard
 ```
-[gameshock](image/gameshock.png)
+[gameshock of a game](image/gameshock.png)
 
 ### Route-Based Strategy
 
@@ -49,17 +49,17 @@ The planner considers land availability;
 
 ### Joint Route Evaluation
 
-An early implementation added a reconstructed tomato strategy on top of the existing route. Although the tomato project appeared profitable in isolation, it competed with the original strategy for land, workers, cash, inputs, inventory space, and transportation time.
+An early implementation added a reconstructed tomato strategy on top of the existing route since the tomato project appeared profitable in isolation. However, it competed with the original strategy for land, workers, cash, inputs, inventory space, and transportation time.
 
 The later system evaluates the new crop rotation together with the existing route. Protected work remains fixed, while compatible crop tasks may be rescheduled across available workers.
 
-Combining routes thus involves retained value from the existing route, additional inputs and payroll, displaced production and land and transportation costs. New route will only be adapted if much profit is estimated.
+Combining routes thus involves retained value from the existing route, additional inputs and payroll, displaced production and land and transportation costs. New route will only be adapted in the multi-route system if much profit is estimated.
 
 ### Runtime Safeguards
 
 Planning and worker allocation can be computationally expensive. The runtime controller monitors the current action allowance and remaining banked overage time.
 
-If the available budget becomes too small, the agent returns a compatible plan that has already been fully compiled, or if no complete plan exists, ***no*** action will be chosen.
+If the available budget becomes too small, no complete plan exists and ***no*** action will be chosen.
 
 
 ## Strategy Development
@@ -70,18 +70,13 @@ The first agent contained approximately 400 lines and followed a mostly fixed ec
 
 This approach was understandable but inflexible. When shop availability, resources, or opponent development differed from its assumptions, the agent had few ways to recover.
 
-I therefore adopted an open-source multi-route agent as the development baseline. My work focused on extending its route selection, economic rules, production planning, regression safety, and runtime reliability.
+I therefore adopted an open-source multi-route agent as the development baseline and focused on extending its route selection, economic rules, production planning, regression safety, and runtime reliability.
 
 ### 2. Limitations of Reactive Counter-Strategies
 
-Early development was strongly opponent-driven. I tested against newly released open-source agents, inspected losing replays, and used LLM-assisted iteration to implement counter-strategies.
+Early development was strongly opponent-driven. I tested against newly released open-source agents, inspected losing replays, and implement counter-strategies.
 
-Some changes produced immediate improvements, but they were difficult to maintain due to several factors including regression problem, 
-
-- a rule that defeated one strategy could weaken another matchup;
-- changing complete routes during a game could break existing production;
-- replay-specific fixes frequently caused historical regressions;
-- additional rules increased code complexity and runtime cost.
+Some changes produced immediate improvements, but they were difficult to maintain due to several factors including historical regression problem and new opponents with new strategies. Besides, changing the original route may break existing production.
 
 After more than 20 major iterations, I shifted the objective from fixing individual losses to identifying recurring economic and production problems.
 
@@ -91,22 +86,13 @@ A candidate was no longer judged only by whether it won the replay that motivate
 
 My first attempt supplied an LLM with approximately 100 replays without a sufficiently focused analytical objective. This produced little useful progress.
 
-I later manually compared approximately 200 additional replays from a high-ranking player with the open-source baseline.
+I later manually collected approximately 200 replays from another high-ranking player with a similar strategies comparing with the open-source baseline.
+ 
+Comparison shows that their early behavior(roughly before 300 steps) was often similar, while larger differences emerged during mid-game investment and field expansion. 
 
-The comparison showed that early behavior was often similar, while larger differences emerged during midgame investment and field expansion. Recurring differences included:
+I translated these observations into specific engineering questions and used the LLM to help investigate potential solutions. 
 
-- field allocation;
-- crop mixtures;
-- crop replacement timing;
-- fourth-field tomato production;
-- third-field crop rotation;
-- coordination between hiring, purchasing, production, and selling.
-
-These observations were converted into focused engineering questions.
-
-Instead of asking the LLM to imitate an entire agent, I asked whether a proposed project could be funded, scheduled, supplied, harvested, transported, and sold without damaging the existing production chain.
-
-This produced more useful results than supplying raw replays without a specific hypothesis.
+This more focused, evidence-driven approach produced more useful results than providing raw replay data without a clear analytical direction.
 
 ### 4. Regression-Aware Structural Improvements
 
