@@ -27,7 +27,6 @@ Apply funding, inventory, and continuity checks
     ↓
 Return a completed action or activate a runtime safeguard
 ```
-[gameshock of a game](image/gameshock.png)
 
 ### Route-Based Strategy
 
@@ -35,9 +34,11 @@ The open-source foundation represents strategies as route plans containing movem
 
 These routes provide stable production chains. Route decisions consider information including, cash and inventory, workers and livestock, crops and remaining production cycles, land ownership, market prices and unlocked shops, required production inputs and remaining game time and execution budget.
 
+[gameshock of a game](image/gameshock.png)
+
 ### Calendar-Based Production Planning
 
-Midgame crop changes are evaluated as complete production projects rather than isolated planting action.
+Mid-game crop changes are evaluated as complete production projects rather than isolated planting action.
 
 The planner considers land availability;
 - crop maturity and remaining yields;
@@ -70,7 +71,8 @@ The first agent contained approximately 400 lines and followed a mostly fixed ec
 
 This approach was understandable but inflexible. When shop availability, resources, or opponent development differed from its assumptions, the agent had few ways to recover.
 
-I therefore adopted an open-source multi-route agent as the development baseline and focused on extending its route selection, economic rules, production planning, regression safety, and runtime reliability.
+I therefore adopted an open-source multi-route agent as the development baseline and focused on extending its route selection, economic rules, production planning, regression safety, and runtime reliability. Due to the massive scale of the codebase (over 10,000 lines of Python), I leveraged LLMs for code generation to optimize development efficiency and focus on system architecture.
+
 
 ### 2. Limitations of Reactive Counter-Strategies
 
@@ -96,18 +98,7 @@ This more focused, evidence-driven approach produced more useful results than pr
 
 ### 4. Regression-Aware Structural Improvements
 
-Later development focused on complete economic chains rather than isolated parameter changes.
-
-When a candidate improved one test set but damaged another, I compared their action sequences and game states to determine:
-
-- whether capital was committed too early or too late;
-- whether required feed, seeds, or fertilizer were removed;
-- whether additional workers recovered their payroll;
-- whether new crops displaced more valuable production;
-- whether goods reached the warehouse and were sold;
-- whether runtime fallback disrupted the active route.
-
-This process led to the joint crop-rotation and opportunity-cost evaluation used by the final agent.
+Later development focused on complete economic chains rather than isolated parameter changes：
 
 ## Evaluation and Testing
 
@@ -118,45 +109,21 @@ No single evaluation method was treated as sufficient.
 | Recent losing games | Check whether a candidate addressed newly observed weaknesses. |
 | Historical regression sets | Detect damage to previously successful behavior. |
 | Open-source opponents | Compare against reproducible public strategies. |
-| Randomized shop simulations | Test sensitivity to different market and shop configurations. |
+| Randomized game(shop) simulations | Test sensitivity to different market and shop configurations. |
 | Frozen replay comparisons | Compare versions under identical recorded conditions. |
-| Kaggle submissions | Observe performance in the real execution environment. |
-
-### Evaluation Process
-
-Meaningful changes followed a staged process:
-
-```text
-Mechanical feasibility checks
-        ↓
-Focused screening on relevant games
-        ↓
-Paired comparison with the baseline
-        ↓
-Cross-set regression testing
-        ↓
-Kaggle submission
-```
+| Kaggle ranking submissions | Observe performance in the real execution environment. |
 
 Mechanical checks verified that actions, worker routes, production windows, inputs, inventory, and market orders were valid.
 
 Promising candidates were then compared with the baseline on the same cases. Evaluation considered score differences, win/loss direction, regressions, action divergence, and timeout behavior.
 
-A candidate was rejected if it gained a small number of wins while introducing larger losses elsewhere.
+A candidate was rejected if it gained a small number of wins while introducing larger losses elsewhere, or showing high tendency of regressions.
 
 ### Preventing Replay Overfitting
 
 Replay analysis was used to identify mechanisms, not to build per-game lookup rules.
 
-Candidate conditions had to use state information available during normal gameplay, such as cash, inventory, crop age, land ownership, production capacity, shop availability, and remaining time.
-
-The deployed agent does not use:
-
-- episode IDs;
-- replay filenames;
-- player identities;
-- recorded future actions;
-- hard-coded decisions for individual matches.
+Candidate conditions had to use state information available during normal gameplay, such as cash, inventory, crop age, land ownership, production capacity, shop availability, and remaining time, while episodes IDs, player identities and recorded future actions should not be considered. 
 
 ### Interpreting Offline Results
 
@@ -166,24 +133,22 @@ If the candidate changes its behavior, a live opponent may respond differently f
 
 ### Heuristic and RL Comparison
 
-The heuristic and RL agents were evaluated using the same internal 169-case procedure.
+The heuristic and RL agents developed by my teammates were evaluated using the same internal 169-case procedure.
 
 | Agent | Winning outcomes |
 |---|---:|
 | Multi-route heuristic agent | 145 / 169 |
 | RL agent | 70 / 169 |
 
-This internal comparison influenced the project's development direction. It does not establish that heuristic methods generally outperform reinforcement learning or represent an adaptive leaderboard win rate.
-
-Under the available development time, data, and training setup, the heuristic system made more effective use of existing strategic knowledge and was selected as the primary agent.
+This internal comparison influenced the project's development direction. It does not establish that heuristic methods generally outperform reinforcement learning or represent an adaptive leaderboard win rate. However, under the available and limited development time, data, and training setup, the heuristic system made more effective use of existing strategic knowledge and was selected as the primary agent.
 
 ## Runtime Optimization
 
 The environment provided a per-action allowance and a shared 60-second banked overage budget.
 
-Execution profiling showed that most decisions were inexpensive, while several planning steps consumed substantially more time. Step 288 was the most common source of a large runtime spike.
+Worker scheduling is essentially an NP-Hard multi-agent routing problem. The massive task-to-worker combinations cause combinatorial explosion. Furthermore, strict temporal dependencies and tight compute budgets force the agent to trade off search depth against the risk of triggering timeouts. Step 288 was the most common source of a large runtime spike(shown by the game replays).
 
-An early safeguard stopped planning when an individual step exceeded a fixed threshold. This was too conservative: a long step did not always imply that the entire game would time out, and premature fallback could remove productive work or disrupt the active route.
+An early safeguard stopped planning when an individual step exceeded a fixed threshold and a backup plan will be adapted. This was too conservative: a long step did not always imply that the entire game would time out, and the backup could remove productive work or disrupt the original, active route.
 
 The final safeguard instead considers the remaining overall budget. It stops expensive searches at controlled checkpoints and prefers plans that have already been completely compiled.
 
@@ -197,10 +162,6 @@ The final safeguard instead considers the remaining overall budget. It stops exp
 
 The observed timeout rate decreased by 46.7 percentage points across two separate 30-game batches.
 
-Average runtime is not directly compared because the older replay format recorded only consumption of the overage bank, while the newer logs recorded a duration for every action.
-
-Runtime safeguards reduced but did not eliminate timeout risk. Execution could still vary with server load, initialization cost, state-dependent search complexity, and differences between local and competition environments.
-
 ## My Contributions
 
 My contributions included:
@@ -213,9 +174,8 @@ My contributions included:
 - rejecting overfitted or economically incomplete candidates;
 - analyzing runtime failures and fallback behavior;
 - directing LLM-assisted implementation and testing;
-- packaging the final self-contained submission agent.
 
-The RL agent used in the internal comparison was developed by other team members.
+The RL agent used in initial comparison was developed by other team members.
 
 ## Key Takeaways
 
@@ -223,11 +183,9 @@ The RL agent used in the internal comparison was developed by other team members
 
 - **Give LLMs focused technical questions.** Raw replays produced limited value until gameplay differences were converted into specific hypotheses.
 
-- **Evaluate complete economic chains.** A profitable crop project can reduce total value if it ignores payroll, displaced production, input requirements, or transportation.
-
 - **Prioritize generalization over reactive patching.** Fixing one replay is insufficient if the change damages unrelated games.
 
-- **Treat regression and runtime as part of agent design.** A strategy must preserve existing advantages and complete within the available execution budget.
+- **Treat regression and runtime as part of agent design.** A strategy must preserve existing advantages and consider efficiency.
 
 
 
