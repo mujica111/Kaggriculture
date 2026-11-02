@@ -96,11 +96,7 @@ I translated these observations into specific engineering questions and used the
 
 This more focused, evidence-driven approach produced more useful results than providing raw replay data without a clear analytical direction.
 
-### 4. Regression-Aware Structural Improvements
-
-Later development focused on complete economic chains rather than isolated parameter changes.
-
-## Evaluation and Testing
+### 4. Evaluation and Testing on regressions
 
 No single evaluation method was treated as sufficient.
 
