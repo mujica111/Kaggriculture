@@ -12,9 +12,10 @@ The agent was built upon an open-source multi-route baseline and extended throug
 
 The agent follows multiple production and economic routes rather than one fixed sequence of actions.
 
-Its high-level decision process is:
 
-'''mermaid
+## System Architecture
+
+```mermaid
 flowchart TD
     A["Game Observation"] --> B["Load Current State"]
     B --> C["Active Route & Existing Commitments"]
@@ -58,7 +59,7 @@ flowchart TD
         N
     end
 
-    '''
+    ```
 
 
 ### Route-Based Strategy
