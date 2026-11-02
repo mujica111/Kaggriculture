@@ -14,7 +14,7 @@ The agent follows multiple production and economic routes rather than one fixed 
 
 Its high-level decision process is:
 
-'''Madrid
+'''mermaid
 flowchart TD
     A["Game Observation"] --> B["Load Current State"]
     B --> C["Active Route & Existing Commitments"]
