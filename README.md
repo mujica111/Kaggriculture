@@ -10,7 +10,23 @@ The agent was built upon an open-source multi-route baseline and extended throug
 
 ## Agent Design
 
-The agent follows multiple production and economic routes rather than one fixed sequence of actions.
+The agent follows multiple production and economic routes rather than one fixed sequence of actions:
+
+Its high-level decision process is:
+
+```text
+Game observation
+    ↓
+Load the active route and existing commitments
+    ↓
+Evaluate optional investments and crop rotations
+    ↓
+Compile feasible worker and material schedules
+    ↓
+Apply funding, inventory, and continuity checks
+    ↓
+Return a completed action or activate a runtime safeguard
+```
 
 
 ## System Architecture
