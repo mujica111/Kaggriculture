@@ -34,7 +34,7 @@ The open-source foundation represents strategies as route plans containing movem
 
 These routes provide stable production chains. Route decisions consider information including, cash and inventory, workers and livestock, crops and remaining production cycles, land ownership, market prices and unlocked shops, required production inputs and remaining game time and execution budget.
 
-[gameshock of a game](image/gameshock.png)
+![gameshock of a game](image/gameshock.png)
 
 ### Calendar-Based Production Planning
 
@@ -98,7 +98,7 @@ This more focused, evidence-driven approach produced more useful results than pr
 
 ### 4. Regression-Aware Structural Improvements
 
-Later development focused on complete economic chains rather than isolated parameter changes：
+Later development focused on complete economic chains rather than isolated parameter changes.
 
 ## Evaluation and Testing
 
